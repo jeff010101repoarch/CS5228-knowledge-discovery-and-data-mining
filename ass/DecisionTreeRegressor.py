@@ -56,13 +56,17 @@ class MyDecisionTreeRegressor():
         for j in range(0, n_feature):
             # print(X.shape)
             for s in (X[:,j]):
-                indictor = X[:,j]<s
+                indictor = X[:,j]<=s
                 index_l = np.nonzero(indictor)
                 index_r = np.nonzero(~indictor)
                 y_1 = y[index_l]
                 y_2 = y[index_r]
                 if len(y_1)>0 and len(y_2)>0:
                     error_step = np.power(y_1-y_1.mean(),2).sum()+np.power(y_2-y_2.mean(),2).sum()
+                    # if(j==9):
+                    #     print('---------\n',y_1,'\n',y_1.mean(),'\n',y_2,'\n',y_2.mean())
+                    #     print(error_step, j, s, index_l, index_r)
+                        
                     if error_step<error:
                         error = error_step
                         j_opt = j
@@ -74,7 +78,7 @@ class MyDecisionTreeRegressor():
 
 
     def split(self, X, y, s, j):
-        indictor = X[:,j]<s
+        indictor = X[:,j]<=s
         index_l = np.nonzero(indictor)
         index_r = np.nonzero(~indictor)
 
@@ -99,7 +103,7 @@ class MyDecisionTreeRegressor():
         else:
             index_feature = tree["splitting_variable"]
             threshold = tree["splitting_threshold"]
-            if X[index_feature]<threshold:
+            if X[index_feature]<=threshold:
                 return self.asktree(tree["left"],X)
             else:
                 return self.asktree(tree["right"],X)
@@ -158,8 +162,6 @@ if __name__=='__main__':
                 test_model_dict = json.load(fp)
 
             y_test_pred = np.genfromtxt("Test_data" + os.sep + "y_pred_decision_tree_"  + str(i) + "_" + str(j) + ".csv", delimiter=",")
-            print(model_dict,test_model_dict)
-            print(compare_json_dic(model_dict, test_model_dict) ,compare_predict_output(y_pred, y_test_pred))
             if compare_json_dic(model_dict, test_model_dict) * compare_predict_output(y_pred, y_test_pred) == 1:
                 print("True")
             else:
